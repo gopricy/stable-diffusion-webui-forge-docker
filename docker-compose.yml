@@ -2,12 +2,14 @@ version: '3.9'
 
 x-base_service: &base_service
     ports:
-      - "${WEBUI_PORT:-7860}:7860"
+      - "3600:7860"
     volumes:
-      - &v1 ./data:/data
+      - &v1 /home/ubuntu/efs/data:/data
       - &v2 ./output:/output
+      - &v3 ./config:/data/config
     stop_signal: SIGKILL
     tty: true
+    restart: always
     deploy:
       resources:
         reservations:
@@ -15,6 +17,8 @@ x-base_service: &base_service
               - driver: nvidia
                 device_ids: ['0']
                 capabilities: [compute, utility]
+        limits:
+          memory: 55000M
 
 name: webui-docker
 
@@ -31,7 +35,9 @@ services:
     build: ./services/AUTOMATIC1111
     image: sd-auto:72
     environment:
-      - CLI_ARGS=--allow-code --medvram --xformers --enable-insecure-extension-access --api
+      - SAFETENSORS_FAST_GPU=1
+      - CLI_ARGS=--allow-code --xformers --gradio-auth=kiki:ilios101 --api-auth=kiki:ilios101 --enable-insecure-extension-access --no-hashing --api --cors-allow-origins=* --ckpt /data/models/Stable-diffusion/colorful_v31.safetensors --ckpt /data/models/Stable-diffusion/elegantEntropy_v14.safetensors --ckpt /data/models/Stable-diffusion/dreamshaperXL_turboDpmppSDE.safetensors --ckpt /data/models/Stable-diffusion/colorful_v31.safetensors
+        # --nowebui
 
   auto-cpu:
     <<: *automatic

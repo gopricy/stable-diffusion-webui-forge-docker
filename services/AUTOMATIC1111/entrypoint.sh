@@ -62,6 +62,8 @@ echo "Installing extension dependencies (if any)"
 chown -R root ~/.cache/
 chmod 766 ~/.cache/
 
+pip install -U torch torchaudio --no-cache-dir
+
 shopt -s nullglob
 # For install.py, please refer to https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/Developing-extensions#installpy
 list=(./extensions/*/install.py)
