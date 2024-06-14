@@ -28,17 +28,14 @@ RUN --mount=type=cache,target=/var/cache/apt \
 
 WORKDIR /
 RUN --mount=type=cache,target=/root/.cache/pip \
-  git clone https://github.com/lllyasviel/stable-diffusion-webui-forge.git && \
-  # git clone https://github.com/vladmandic/automatic.git && \
-  # git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git && \
-  # git clone https://github.com/ArtVentureX/sd-webui-agent-scheduler.git && \
-  # git reset --hard baf6946 && \
-  cd stable-diffusion-webui-forge && \
-  pip install -r requirements_versions.txt 
-  #requirements.txt
+  git clone https://github.com/baseco/stable-diffusion-webui && \
+  cd stable-diffusion-webui && \
+  git checkout channel-forge && \
+  pip install -r requirements_versions.txt && \
+  pip install git+https://github.com/openai/CLIP.git
 
 
-ENV ROOT=/stable-diffusion-webui-forge
+ENV ROOT=/stable-diffusion-webui
 
 COPY --from=download /repositories/ ${ROOT}/repositories/
 RUN mkdir ${ROOT}/interrogate && cp ${ROOT}/repositories/clip-interrogator/clip_interrogator/data/* ${ROOT}/interrogate
@@ -64,7 +61,7 @@ RUN \
   sed -i 's/in_app_dir = .*/in_app_dir = True/g' /opt/conda/lib/python3.10/site-packages/gradio/routes.py && \
   git config --global --add safe.directory '*'
 
-RUN pip install -U torch torchaudio --no-cache-dir
+# RUN pip install -U torch torchaudio --no-cache-dir
 
 WORKDIR ${ROOT}
 ENV NVIDIA_VISIBLE_DEVICES=all

@@ -2,11 +2,10 @@ version: '3.9'
 
 x-base_service: &base_service
     ports:
-      - "3600:7860"
+      - "10600:7860"
     volumes:
-      - &v1 /home/ubuntu/efs/data:/data
+      - &v1 /home/channel/models/sdmodels:/data
       - &v2 ./output:/output
-      - &v3 ./config:/data/config
     stop_signal: SIGKILL
     tty: true
     restart: always
@@ -18,7 +17,7 @@ x-base_service: &base_service
                 device_ids: ['0']
                 capabilities: [compute, utility]
         limits:
-          memory: 55000M
+          memory: 58000M
 
 name: webui-docker
 
@@ -36,8 +35,7 @@ services:
     image: sd-auto:72
     environment:
       - SAFETENSORS_FAST_GPU=1
-      - CLI_ARGS=--allow-code --xformers --gradio-auth=kiki:ilios101 --api-auth=kiki:ilios101 --enable-insecure-extension-access --no-hashing --api --cors-allow-origins=* --ckpt /data/models/Stable-diffusion/colorful_v31.safetensors --ckpt /data/models/Stable-diffusion/elegantEntropy_v14.safetensors --ckpt /data/models/Stable-diffusion/dreamshaperXL_turboDpmppSDE.safetensors --ckpt /data/models/Stable-diffusion/colorful_v31.safetensors
-        # --nowebui
+      - CLI_ARGS=--allow-code --xformers --gradio-auth=kiki:ilios101 --api-auth=kiki:ilios101 --enable-insecure-extension-access --no-hashing --api --cors-allow-origins=* --nowebui
 
   auto-cpu:
     <<: *automatic
